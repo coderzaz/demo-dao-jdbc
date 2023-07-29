@@ -38,7 +38,7 @@ public class SellerDaoJDBC implements SellerDao{
 		// TODO Auto-generated method stub
 		
 	}
-
+/*
 	@Override
 	public Seller findById(Integer id) {
 		PreparedStatement st = null;
@@ -80,13 +80,62 @@ public class SellerDaoJDBC implements SellerDao{
 		}
 
 	}
+*/	
 	
+	@Override
+	public Seller findById(Integer id) {
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		try {
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+				    + "ON seller.DepartmentId = department.Id "
+					+ "WHERE seller.Id = ?");
+			
+			st.setInt(1,id); //recebe o id como parâmetro da função
+			rs = st.executeQuery(); //rs recebe a consulta sql
+			
+			//implemetação para retornar um vendedor por id
+			if(rs.next()) { //se for true
+				Department dep = instanciateDepartment(rs); //instâncio Department
+				
+				Seller obj = instanciateDepartment(rs,dep); //instâncio Seller
+				
+				return obj; //retorno seller
+			}
+			return null; //caso a consulta seja nula
+		}
+		catch (SQLException e) { //cria uma exceção 
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+
+	}
 	
-	
-	
-	
-	
-	
+
+	private Seller instanciateDepartment(ResultSet rs, Department dep) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep); 
+		
+		return obj;
+		
+}
+
+	private Department instanciateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId")); 
+		dep.setName(rs.getString("DepName"));
+		return dep;
+}
 
 	@Override
 	public List<Seller> findAll() {

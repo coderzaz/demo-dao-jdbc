@@ -16,6 +16,9 @@ public class Program {
 		//instância o Objeto sellerDao
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 		//objeto do tipo seller recebe de sellerDao.findById o código 3 que faz refêrencia ao vendedor Alex Gray
+		
+		System.out.println("=== Test 1: seller findById ===");
+		
 		Seller seller = sellerDao.findById(3);
 		
 		System.out.println(seller);
